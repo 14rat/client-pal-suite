@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      cliente_anexos: {
+        Row: {
+          caminho: string
+          cliente_id: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          tamanho: number | null
+          tipo_mime: string | null
+          updated_at: string
+          usuario_id: string
+        }
+        Insert: {
+          caminho: string
+          cliente_id: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          updated_at?: string
+          usuario_id: string
+        }
+        Update: {
+          caminho?: string
+          cliente_id?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho?: number | null
+          tipo_mime?: string | null
+          updated_at?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cliente_anexos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cpf_cnpj: string
