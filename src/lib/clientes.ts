@@ -74,3 +74,8 @@ function normalizar(input: ClienteInput) {
     endereco: input.endereco.trim() || null,
   };
 }
+export async function buscarCliente(id: string): Promise<Cliente | null> {
+  const { data, error } = await supabase.from("clientes").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data as Cliente) ?? null;
+}
