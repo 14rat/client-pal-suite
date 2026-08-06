@@ -90,3 +90,11 @@ export function formatarTamanho(bytes: number | null) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+export async function contarAnexos(): Promise<number> {
+  const { count, error } = await supabase
+    .from("cliente_anexos")
+    .select("id", { count: "exact", head: true });
+  if (error) throw error;
+  return count ?? 0;
+}
