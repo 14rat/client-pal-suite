@@ -1,7 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Plus, Search, Trash2, Users, Pencil, ShieldCheck, Paperclip } from "lucide-react";
+import {
+  LogOut,
+  Plus,
+  Search,
+  Trash2,
+  Users,
+  Pencil,
+  ShieldCheck,
+  Paperclip,
+  Clock,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +25,7 @@ import {
   type ClienteInput,
 } from "@/lib/clientes";
 import { ClienteFormDialog } from "@/components/ClienteFormDialog";
+import { contarAnexos } from "@/lib/anexos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -70,6 +81,12 @@ function Painel() {
   const clientesQuery = useQuery({
     queryKey: ["clientes", user?.id],
     queryFn: listarClientes,
+    enabled: !!user,
+  });
+
+  const anexosTotalQuery = useQuery({
+    queryKey: ["anexos-total", user?.id],
+    queryFn: contarAnexos,
     enabled: !!user,
   });
 
@@ -152,7 +169,7 @@ function Painel() {
       </header>
 
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Card className="shadow-panel">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -161,6 +178,21 @@ function Painel() {
             </CardHeader>
             <CardContent>
               <p className="font-display text-3xl font-semibold">{clientes.length}</p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-panel">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Paperclip className="size-4" /> Arquivos enviados
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="font-display text-3xl font-semibold">
+                {anexosTotalQuery.isLoading ? "…" : (anexosTotalQuery.data ?? 0)}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Documentos anexados às fichas de clientes.
+              </p>
             </CardContent>
           </Card>
           <Card className="shadow-panel">
@@ -181,6 +213,41 @@ function Painel() {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="shadow-panel">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <Clock className="size-4" /> Últimos cadastros
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {clientesQuery.isLoading ? (
+              <p className="py-2 text-sm text-muted-foreground">Carregando…</p>
+            ) : clientes.length === 0 ? (
+              <p className="py-2 text-sm text-muted-foreground">Nenhum cadastro ainda.</p>
+            ) : (
+              <ul className="divide-y">
+                {clientes.slice(0, 5).map((cliente) => (
+                  <li key={cliente.id} className="flex items-center justify-between gap-3 py-2">
+                    <div className="min-w-0">
+                      <Link
+                        to="/clientes/$id"
+                        params={{ id: cliente.id }}
+                        className="truncate text-sm font-medium hover:underline"
+                      >
+                        {cliente.nome}
+                      </Link>
+                      <p className="text-xs text-muted-foreground">{cliente.cpf_cnpj}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(cliente.created_at).toLocaleDateString("pt-BR")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
 
         <Card className="shadow-panel">
           <CardHeader className="flex flex-wrap items-center justify-between gap-4">
