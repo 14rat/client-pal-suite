@@ -61,11 +61,11 @@ export async function consultarCep(cep: string): Promise<EnderecoCep> {
   const dados = (await via.json()) as Record<string, string> & { erro?: boolean | string };
   if (dados.erro) throw new Error("CEP não encontrado.");
   return {
-    cep: formatarCep(dados.cep ?? digitos),
-    logradouro: dados.logradouro ?? "",
-    bairro: dados.bairro ?? "",
-    cidade: dados.localidade ?? "",
-    uf: dados.uf ?? "",
+    cep: formatarCep(dados['cep'] ?? digitos),
+    logradouro: dados['logradouro'] ?? "",
+    bairro: dados['bairro'] ?? "",
+    cidade: dados['localidade'] ?? "",
+    uf: dados['uf'] ?? "",
   };
 }
 
