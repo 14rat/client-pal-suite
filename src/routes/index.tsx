@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Plus, Search, Trash2, Users, Pencil, ShieldCheck } from "lucide-react";
+import { LogOut, Plus, Search, Trash2, Users, Pencil, ShieldCheck, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -228,7 +228,15 @@ function Painel() {
                   <TableBody>
                     {filtrados.map((cliente) => (
                       <TableRow key={cliente.id}>
-                        <TableCell className="font-medium">{cliente.nome}</TableCell>
+                        <TableCell className="font-medium">
+                          <Link
+                            to="/clientes/$id"
+                            params={{ id: cliente.id }}
+                            className="hover:underline"
+                          >
+                            {cliente.nome}
+                          </Link>
+                        </TableCell>
                         <TableCell>{cliente.cpf_cnpj}</TableCell>
                         <TableCell>{cliente.email || "—"}</TableCell>
                         <TableCell>{cliente.telefone || "—"}</TableCell>
@@ -237,6 +245,16 @@ function Painel() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Anexos de ${cliente.nome}`}
+                            >
+                              <Link to="/clientes/$id" params={{ id: cliente.id }}>
+                                <Paperclip className="size-4" />
+                              </Link>
+                            </Button>
                             <Button
                               variant="ghost"
                               size="icon"
