@@ -50,7 +50,10 @@ export async function enviarAnexo(clienteId: string, arquivo: File) {
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
-    .upload(caminho, arquivo, { contentType: arquivo.type || undefined, upsert: false });
+    .upload(caminho, arquivo, {
+      upsert: false,
+      ...(arquivo.type ? { contentType: arquivo.type } : {}),
+    });
   if (uploadError) throw uploadError;
 
   const { error } = await supabase.from("cliente_anexos").insert({
